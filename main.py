@@ -248,6 +248,8 @@ def track():
             logger.debug('Flight %s has been deleted from SQL.' % (pilot))
             
     db.commit()
+    cursor.close()
+    db.close()
     logger.info('Tracking is done, DB has been committed.')
 
 
