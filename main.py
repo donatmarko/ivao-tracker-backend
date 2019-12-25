@@ -9,13 +9,13 @@ import sys
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-handler = logging.handlers.TimedRotatingFileHandler('log/tracker.log', when="midnight", interval=1, backupCount=10)
+handler = logging.handlers.TimedRotatingFileHandler('log/ivao-tracker.log', when="midnight", interval=1, backupCount=10)
 handler.setFormatter(logging.Formatter('%(asctime)s\t%(levelname)s\t%(message)s', '%Y-%m-%d %H:%M:%S'))
 logger.addHandler(handler)
-logger.warning('OAVI Tracker Service has been started.')
+logger.warning('IVAO Tracker Backend has been started.')
 
 config = configparser.ConfigParser()
-config.read('tracker.ini')
+config.read('ivao-tracker.ini')
 logger.info('Config loaded.')
 
 def error_handler(type, value, tb):
