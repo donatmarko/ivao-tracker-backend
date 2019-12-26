@@ -17,11 +17,11 @@ logger.warning('IVAO Tracker Backend has been started.')
 config = configparser.ConfigParser()
 config.read('ivao-tracker.ini')
 logger.info('Config loaded.')
-'''
+
 def error_handler(type, value, tb):
     logger.exception(value)
     sys.exit(1)
-sys.excepthook = error_handler'''
+sys.excepthook = error_handler
 
 '''
     * SQL szerint onlineok legyűjtése tömbbe, mindegyik elem action flag := not_updated
