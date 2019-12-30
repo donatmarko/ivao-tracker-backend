@@ -175,8 +175,12 @@ def track():
     pilot_created = 0
     pilot_updated = 0
     pilot_deleted = 0
+    
     for pilot in pilots:
+        pilot_sesid = 0
+        
         if pilot['_action'] == 'updated':
+            pilot_sesid = pilot['id']
             cursor.execute('UPDATE pilots SET latitude = %s, longitude = %s, heading = %s, on_ground = %s, altitude = %s, groundspeed = %s, mode_a = %s, fp_aircraft = %s, fp_speed = %s, fp_rfl = %s, fp_departure = %s, fp_destination = %s, fp_alternate = %s, fp_alternate2 = %s, fp_type = %s, fp_pob = %s, fp_route = %s, fp_item18 = %s, fp_rev = %s, fp_rule = %s, fp_deptime = %s, fp_eet = %s, fp_endurance = %s, last_tracked_at = NOW() WHERE id = %s', (
                 pilot['latitude'],
                 pilot['longitude'],
@@ -203,11 +207,10 @@ def track():
                 pilot['fp_endurance'],
                 pilot['id'],
             ))
-            logger.debug('Flight session #%s (%s) has been updated in SQL.' % (pilot['id'], pilot['callsign']))
+            logger.debug('Flight session #%s has been updated in SQL.' % pilot_sesid)
             pilot_updated += 1
         
         if pilot['_action'] == 'created':
-            a = pilot
             cursor.execute('INSERT INTO pilots (callsign, vid, status, rating, latitude, longitude, server, protocol, software, heading, on_ground, altitude, groundspeed, mode_a, fp_aircraft, fp_speed, fp_rfl, fp_departure, fp_destination, fp_alternate, fp_alternate2, fp_type, fp_pob, fp_route, fp_item18, fp_rev, fp_rule, fp_deptime, fp_eet, fp_endurance, sim_type, online, connected_at, last_tracked_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 1, %s, NOW())', (
                 pilot['callsign'],
                 pilot['vid'],
@@ -242,13 +245,27 @@ def track():
                 pilot['sim_type'],
                 pilot['connected_at'],
             ))
-            logger.debug('New flight session (%s) has been added to SQL.' % (pilot['callsign']))
+            pilot_sesid = cursor.lastrowid
+            logger.debug('New flight session #%s has been added to SQL.' % pilot_sesid)
             pilot_created += 1
             
         if pilot['_action'] == 'not_updated':
             cursor.execute('UPDATE pilots SET online = 0, disconnected_at = NOW() WHERE id = %s', (pilot['id'], ))
-            logger.debug('Flight session #%s (%s) has been deleted from SQL.' % (pilot['id'], pilot['callsign']))
+            logger.debug('Flight session #%s has been deleted from SQL.' % pilot['id'])
             pilot_deleted += 1
+            
+        # a pillanatnyi pozícióadatokat egy külön táblába is lerakjuk
+        if pilot_sesid > 0:
+            cursor.execute('INSERT INTO pilot_positions (session_id, latitude, longitude, heading, on_ground, altitude, groundspeed, tracked_at) VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())', (
+                pilot_sesid,
+                pilot['latitude'],
+                pilot['longitude'],
+                pilot['heading'],
+                pilot['on_ground'],
+                pilot['altitude'],
+                pilot['groundspeed'],
+            ))
+            logger.debug('Flight session #%s ops-data has been recorded to SQL.' % pilot_sesid)
            
     db.commit()
     cursor.close()
@@ -259,5 +276,3 @@ def track():
 
 
 track()
-
-    
