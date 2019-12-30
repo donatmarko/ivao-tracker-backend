@@ -43,7 +43,7 @@ def track():
         database=config['MySQL']['Database']    
     )
     cursor = db.cursor(buffered=True, dictionary=True)
-    
+    cursor.execute("SET time_zone = 'Etc/UTC'")
     
     # legyűjtjük az SQL szerint online klienseket (köztük lehet már nem online is)
     logger.info('Getting ATCs from SQL...')
