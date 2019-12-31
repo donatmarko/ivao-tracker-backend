@@ -256,16 +256,19 @@ def track():
             
         # a pillanatnyi pozícióadatokat egy külön táblába is lerakjuk
         if pilot_sesid > 0:
-            cursor.execute('INSERT INTO pilot_positions (session_id, latitude, longitude, heading, on_ground, altitude, groundspeed, tracked_at) VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())', (
-                pilot_sesid,
-                pilot['latitude'],
-                pilot['longitude'],
-                pilot['heading'],
-                pilot['on_ground'],
-                pilot['altitude'],
-                pilot['groundspeed'],
-            ))
-            logger.debug('Flight session #%s ops-data has been recorded to SQL.' % pilot_sesid)
+            if pilot['latitude'] > 0 and pilot['longitude'] > 0:
+                cursor.execute('INSERT INTO pilot_positions (session_id, latitude, longitude, heading, on_ground, altitude, groundspeed, tracked_at) VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())', (
+                    pilot_sesid,
+                    pilot['latitude'],
+                    pilot['longitude'],
+                    pilot['heading'],
+                    pilot['on_ground'],
+                    pilot['altitude'],
+                    pilot['groundspeed'],
+                ))
+                logger.debug('Flight session #%s ops-data has been recorded to SQL.' % pilot_sesid)
+            else:
+                logger.warning('Broken ops-data (%s) found, skipping.' % pilot_sesid)
            
     db.commit()
     cursor.close()
