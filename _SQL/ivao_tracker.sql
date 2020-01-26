@@ -20,7 +20,7 @@ CREATE TABLE `atcs` (
   `atis_time` datetime NOT NULL,
   `online` tinyint(1) NOT NULL,
   `connected_at` datetime NOT NULL,
-  `disconnected_at` datetime NOT NULL,
+  `disconnected_at` datetime DEFAULT NULL,
   `last_tracked_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -59,7 +59,7 @@ CREATE TABLE `pilots` (
   `sim_type` varchar(50) NOT NULL,
   `online` tinyint(1) NOT NULL,
   `connected_at` datetime NOT NULL,
-  `disconnected_at` datetime NOT NULL,
+  `disconnected_at` datetime DEFAULT NULL,
   `last_tracked_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
